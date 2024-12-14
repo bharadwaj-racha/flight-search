@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import Result from "./Result";
 import "react-input-range/lib/css/index.css";
 import flightJson from "../api-data.json"; 
+
 function Search() {
   const [btnType, setbtnType] = useState("oneWay");
   const [passengerCount, setPassengerCount] = useState(1);
-  const [priceRange, setPriceRange] = useState(10000);
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
   const [bookReturn, setBookReturn] = useState(false);
   const [originCity, setOriginCity] = useState("");
   const [destinationCity, setDestinationCity] = useState("");
@@ -30,6 +31,8 @@ function Search() {
       price: result.fare?.gross_fare?.value || 0, // Price
       airline: result.al || "N/A",                     // Airline (al)
       duration: result.tt || "N/A", 
+      arrivaltime:result.at || "N/A",
+      durationdate:result.dt || "N/A",
     }))
   );
   
@@ -70,7 +73,8 @@ function Search() {
         data.from.toLowerCase().includes(originCity.trim().toLowerCase()) &&
         data.to.toLowerCase().includes(destinationCity.trim().toLowerCase()) &&
         data.depart === departureDate &&
-        data.price <= priceRange
+        data.price >= priceRange.min &&
+        data.price <= priceRange.max
     );
     setFilteredData(result);
     console.log("Filtered Data (One Way):", result); // Debug filtered data
@@ -82,7 +86,8 @@ function Search() {
         data.from.toLowerCase().includes(destinationCity.trim().toLowerCase()) &&
         data.to.toLowerCase().includes(originCity.trim().toLowerCase()) &&
         data.depart === returnDate &&
-        data.price <= priceRange
+        data.price >= priceRange.min &&
+        data.price <= priceRange.max
     );
     setReturnFilterData(result);
     console.log("Filtered Data (Return):", result); // Debug return filtered data
@@ -210,10 +215,35 @@ function Search() {
                       />
                     )}
                   </div>
+                  <div className="d-flex mt-3">
+  <div className="form-group me-2">
+    <label>Price Range:</label>
+    <input
+      type="number"
+      value={priceRange.min}
+      onChange={(e) =>
+        setPriceRange((prev) => ({ ...prev, min: parseInt(e.target.value) }))
+      }
+      placeholder="Min"
+    />
+  </div>
+  <div className="form-group ms-2">
+    <input
+      type="number"
+      value={priceRange.max}
+      onChange={(e) =>
+        setPriceRange((prev) => ({ ...prev, max: parseInt(e.target.value) }))
+      }
+      placeholder="Max"
+    />
+  </div>
+</div>
+
                 </div>
               </div>
             </div>
           </div>
+          
         </div>
         <div className="m-3">
           <Result

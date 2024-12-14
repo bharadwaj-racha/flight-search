@@ -1,9 +1,19 @@
 import React from "react";
 import userImg from '../assets/user.png';
 import plane from '../assets/plane-flight.png';
+import airindia from '../assets/airindia.png';
+import vistara from '../assets/vistara.png';
+import indigo from '../assets/indigo.png';
 
 function TicketCard(props) {
   const { filteredData, passengerCount } = props;
+
+  // Airline code to name and logo mapping
+  const airlineMapping = {
+    "UK": { name: "Vistara", logo: vistara },
+    "AI": { name: "Air India", logo: airindia },
+    "6E": { name: "IndiGo Airlines", logo: indigo }
+  };
 
   return (
     <>
@@ -11,8 +21,17 @@ function TicketCard(props) {
         const fromShort = data.from || "Unknown";
         const toShort = data.to || "Unknown";
         const departTime = data.depart || "Not Available";
-        const arrivalTime = data.arrival || "Not Available";
-        const airline_tic = data.airline || "Not Available";
+        const arrivalTime = data.arrivaltime || "Not Available";
+        const durationDate = data.durationdate || "Not Available";
+        
+        // Get the airline code or set to "Not Available"
+        const airlineCode = data.airline || "Not Available";
+        
+        // Get the airline name and logo based on the code, defaulting to 'Not Available' if not found
+        const airlineInfo = airlineMapping[airlineCode] || { name: airlineCode, logo: plane };
+
+        const airline_tic = airlineInfo.name;
+        const airlineLogo = airlineInfo.logo;
         const duration_tic = data.duration || "Not Available";
 
         return (
@@ -60,6 +79,7 @@ function TicketCard(props) {
                       </b>
                     </div>
                     <div>Depart: {departTime}</div>
+                    <div>DepartTime: {durationDate}</div>
                     <div>Arrive: {arrivalTime}</div>
                     <div>Airline: {airline_tic}</div>
                     <div>Duration: {duration_tic}</div>
@@ -75,8 +95,8 @@ function TicketCard(props) {
                 >
                   <div style={{ height: "100px", width: "140px" }}>
                     <img
-                      src={plane}
-                      alt="Flight"
+                      src={airlineLogo}
+                      alt="Airline Logo"
                       style={{
                         height: "auto",
                         width: "100%",
